@@ -13,7 +13,11 @@ export function HeaderMobile() {
   return (
     <div className="lg:hidden">
       {/* Botão para abrir o Header */}
-      <Button onClick={handleHeader} className="m-3 cursor-pointer">
+      <Button
+        variant="outline"
+        onClick={handleHeader}
+        className="m-3 cursor-pointer"
+      >
         <Menu className="size-4" />
       </Button>
 
