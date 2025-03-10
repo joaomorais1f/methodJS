@@ -10,8 +10,8 @@ export function SignIn() {
       <Helmet title="signIn" />
       <div className="flex w-[95%] flex-col md:w-[350px]">
         <header className="text-center">
-          <h1 className="text-2xl font-bold"> Acessar Conta </h1>
-          <p className="font-xl text-muted-foreground/5 text-left font-bold">
+          <h1 className="text-2xl font-bold tracking-tight"> Acessar Conta </h1>
+          <p className="font-xl text-muted-foreground text-left font-bold">
             Acesse a sua conta para verificar os conteúdos a revisar!
           </p>
         </header>
