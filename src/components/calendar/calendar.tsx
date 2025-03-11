@@ -2,11 +2,14 @@ import {
   add,
   eachDayOfInterval,
   endOfMonth,
+  endOfWeek,
   format,
   getDay,
+  isToday,
   lastDayOfMonth,
   startOfMonth,
   startOfToday,
+  startOfWeek,
   sub,
 } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
@@ -15,8 +18,13 @@ import { useState } from 'react'
 
 import { Button } from '../ui/button'
 
+interface viewCalendarProps {
+  viewCase: 'today' | 'week' | 'month'
+}
+
 export function Calendar() {
   const [currentDate, setCurrentDate] = useState(startOfToday())
+  const [view, setView] = useState('month')
 
   const startOfCurrentMonth = startOfMonth(currentDate)
   const endOfCurrentMonth = endOfMonth(currentDate)
@@ -26,6 +34,15 @@ export function Calendar() {
     start: startOfCurrentMonth,
     end: endOfCurrentMonth,
   })
+
+  // Semana do mês atual
+  const weekCurrentMonth = eachDayOfInterval({
+    start: startOfWeek(currentDate),
+    end: endOfWeek(currentDate),
+  })
+
+  // dia da semana do dia atual
+  const dayOfTheWeekToday = format(currentDate, 'EEEEEE', { locale: ptBR })
 
   // Dias do mês anterior
   const startDayOfWeek = getDay(startOfCurrentMonth) // 0 (Domingo) a 6 (Sábado)
@@ -47,7 +64,11 @@ export function Calendar() {
         )
       : []
 
-  function handleDayClick(day) {
+  function switchViewCalendar({ viewCase }: viewCalendarProps) {
+    setView(viewCase)
+  }
+
+  function handleDayClick(day: Date) {
     // Atualiza para o mês anterior se o dia for do mês anterior
     if (day < startOfCurrentMonth) {
       setCurrentDate(previousMonth)
@@ -82,6 +103,28 @@ export function Calendar() {
             </Button>
           </div>
         </div>
+        <div className="mx-auto mt-3 mb-3 grid grid-cols-3 gap-2 pr-3 pl-3">
+          <Button
+            variant={view === 'today' ? 'secondary' : 'default'}
+            onClick={() => switchViewCalendar({ viewCase: 'today' })}
+          >
+            Hoje
+          </Button>
+          <Button
+            variant={view === 'week' ? 'secondary' : 'default'}
+            onClick={() => switchViewCalendar({ viewCase: 'week' })}
+          >
+            Semana
+          </Button>
+          <Button
+            variant={view === 'month' ? 'secondary' : 'default'}
+            onClick={() => switchViewCalendar({ viewCase: 'month' })}
+          >
+            Mês
+          </Button>
+        </div>
+      </header>
+      {view !== 'today' && (
         <div className="text-muted-foreground mt-3 grid grid-cols-7 text-center">
           <span>DOM</span>
           <span>SEG</span>
@@ -91,6 +134,8 @@ export function Calendar() {
           <span>SEX</span>
           <span>SÁB</span>
         </div>
+      )}
+      {view === 'month' && (
         <div className="grid grid-cols-7 gap-1">
           {/* Dias do mês anterior */}
           {daysFromPreviousMonth.map((day) => (
@@ -110,6 +155,7 @@ export function Calendar() {
               key={day.toString()}
               variant="outline"
               onClick={() => handleDayClick(day)}
+              className={`${isToday(day) ? 'border border-blue-600 text-blue-600' : ''}`}
             >
               {format(day, 'd')}
             </Button>
@@ -127,7 +173,35 @@ export function Calendar() {
             </Button>
           ))}
         </div>
-      </header>
+      )}
+      {view === 'week' && (
+        <div className="grid grid-cols-7 gap-2">
+          {weekCurrentMonth.map((day) => (
+            <Button
+              key={day.toString()}
+              variant="outline"
+              onClick={() => handleDayClick(day)}
+              className={`${isToday(day) ? 'border border-blue-600 text-blue-600' : ''}`}
+            >
+              {format(day, 'd')}
+            </Button>
+          ))}
+        </div>
+      )}
+      {view === 'today' && (
+        <>
+          <header className="text-muted-foreground mt-3 grid text-center">
+            <span className="uppercase"> {dayOfTheWeekToday} </span>
+            <span>
+              {' '}
+              {format(currentDate, "d 'de' MMMM 'de' yyyy", {
+                locale: ptBR,
+              })}
+            </span>
+          </header>
+          <div />
+        </>
+      )}
     </section>
   )
 }
