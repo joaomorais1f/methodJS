@@ -17,6 +17,14 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { useState } from 'react'
 
 import { Button } from '../ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '../ui/dialog'
 
 interface viewCalendarProps {
   viewCase: 'today' | 'week' | 'month'
@@ -25,6 +33,7 @@ interface viewCalendarProps {
 export function Calendar() {
   const [currentDate, setCurrentDate] = useState(startOfToday())
   const [view, setView] = useState('month')
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null) // Para armazenar a data clicada
 
   const startOfCurrentMonth = startOfMonth(currentDate)
   const endOfCurrentMonth = endOfMonth(currentDate)
@@ -69,14 +78,7 @@ export function Calendar() {
   }
 
   function handleDayClick(day: Date) {
-    // Atualiza para o mês anterior se o dia for do mês anterior
-    if (day < startOfCurrentMonth) {
-      setCurrentDate(previousMonth)
-    }
-    // Atualiza para o próximo mês se o dia for do próximo mês
-    else if (day > endOfCurrentMonth) {
-      setCurrentDate(nextMonth)
-    }
+    setSelectedDate(day) // Define a data clicada
   }
 
   function nextMonthHandler() {
@@ -135,73 +137,115 @@ export function Calendar() {
           <span>SÁB</span>
         </div>
       )}
-      {view === 'month' && (
-        <div className="grid grid-cols-7 gap-1">
-          {/* Dias do mês anterior */}
-          {daysFromPreviousMonth.map((day) => (
-            <Button
-              key={day.toString()}
-              variant="outline"
-              onClick={() => handleDayClick(day)}
-              className="text-muted-foreground"
-            >
-              {format(day, 'd')}
-            </Button>
-          ))}
+      <Dialog>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>
+              {selectedDate
+                ? format(selectedDate, "d 'de' MMMM 'de' yyyy", {
+                    locale: ptBR,
+                  })
+                : 'Selecione uma data'}
+            </DialogTitle>
+            <DialogDescription asChild>
+              {/* Conteúdo simulando itens de estudo */}
+              <ul className="flex list-inside list-none flex-col gap-1">
+                <li className="flex gap-2">
+                  <span className="border bg-yellow-600 text-white">
+                    Matemática
+                  </span>
+                  <span className="ml-auto">Equação do 2º grau</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="border bg-green-600 text-white">
+                    Química
+                  </span>
+                  <span>Química Orgânica</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="border bg-gray-600 text-white">
+                    História
+                  </span>
+                  <span> Revolução Industrial </span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="border bg-orange-600 text-white">
+                    Física
+                  </span>
+                  <span> Leis de Newton</span>
+                </li>
+                <li className="flex gap-2">
+                  <span className="border bg-yellow-600 text-white">
+                    Matemática
+                  </span>
+                  <span>Geometria Espacial</span>
+                </li>
+              </ul>
+            </DialogDescription>
+          </DialogHeader>
+        </DialogContent>
+        {view === 'month' && (
+          <div className="grid grid-cols-7 gap-1">
+            {/* Dias do mês anterior */}
+            {daysFromPreviousMonth.map((day) => (
+              <DialogTrigger asChild key={day.toString()}>
+                <Button
+                  variant="outline"
+                  onClick={() => handleDayClick(day)}
+                  className="text-muted-foreground"
+                >
+                  {format(day, 'd')}
+                </Button>
+              </DialogTrigger>
+            ))}
 
-          {/* Dias do mês atual */}
-          {daysInMonth.map((day) => (
-            <Button
-              key={day.toString()}
-              variant="outline"
-              onClick={() => handleDayClick(day)}
-              className={`${isToday(day) ? 'border border-blue-600 text-blue-600' : ''}`}
-            >
-              {format(day, 'd')}
-            </Button>
-          ))}
+            {/* Dias do mês atual */}
+            {daysInMonth.map((day) => (
+              <DialogTrigger asChild key={day.toString()}>
+                <Button
+                  variant="outline"
+                  onClick={() => handleDayClick(day)}
+                  className={`${
+                    isToday(day) ? 'border border-blue-600 text-blue-600' : ''
+                  }`}
+                >
+                  {format(day, 'd')}
+                </Button>
+              </DialogTrigger>
+            ))}
 
-          {/* Dias do próximo mês */}
-          {daysFromNextMonth.map((day) => (
-            <Button
-              key={day.toString()}
-              variant="outline"
-              onClick={() => handleDayClick(day)}
-              className="text-muted-foreground"
-            >
-              {format(day, 'd')}
-            </Button>
-          ))}
-        </div>
-      )}
-      {view === 'week' && (
-        <div className="grid grid-cols-7 gap-2">
-          {weekCurrentMonth.map((day) => (
-            <Button
-              key={day.toString()}
-              variant="outline"
-              onClick={() => handleDayClick(day)}
-              className={`${isToday(day) ? 'border border-blue-600 text-blue-600' : ''}`}
-            >
-              {format(day, 'd')}
-            </Button>
-          ))}
-        </div>
-      )}
-      {view === 'today' && (
-        <>
-          <header className="text-muted-foreground mt-3 grid text-center">
-            <span className="uppercase"> {dayOfTheWeekToday} </span>
-            <span>
-              {' '}
-              {format(currentDate, "d 'de' MMMM 'de' yyyy", {
-                locale: ptBR,
-              })}
-            </span>
-          </header>
-          <div />
-        </>
-      )}
+            {/* Dias do próximo mês */}
+            {daysFromNextMonth.map((day) => (
+              <DialogTrigger asChild key={day.toString()}>
+                <Button
+                  variant="outline"
+                  onClick={() => handleDayClick(day)}
+                  className="text-muted-foreground"
+                >
+                  {format(day, 'd')}
+                </Button>
+              </DialogTrigger>
+            ))}
+          </div>
+        )}
+        {view === 'week' && (
+          <div className="grid grid-cols-7 gap-2">
+            {weekCurrentMonth.map((day) => (
+              <DialogTrigger asChild key={day.toString()}>
+                <Button
+                  variant="outline"
+                  onClick={() => handleDayClick(day)}
+                  className={`${
+                    isToday(day) ? 'border border-blue-600 text-blue-600' : ''
+                  }`}
+                >
+                  {format(day, 'd')}
+                </Button>
+              </DialogTrigger>
+            ))}
+          </div>
+        )}
+      </Dialog>
     </section>
   )
 }
