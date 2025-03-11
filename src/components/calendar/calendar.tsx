@@ -245,6 +245,20 @@ export function Calendar() {
             ))}
           </div>
         )}
+        {view === 'today' && (
+          <>
+            <header className="text-muted-foreground mt-3 grid text-center">
+              <span className="uppercase"> {dayOfTheWeekToday} </span>
+              <span>
+                {' '}
+                {format(currentDate, "d 'de' MMMM 'de' yyyy", {
+                  locale: ptBR,
+                })}
+              </span>
+            </header>
+            <div />
+          </>
+        )}
       </Dialog>
     </section>
   )
