@@ -73,28 +73,16 @@ export function FloatingButton() {
                       </SelectContent>
                     </Select>
                   </div>
-                  {!openInputTag && (
-                    <Button
-                      variant="outline"
-                      className="items mt-4 flex flex-1 text-center"
-                      type="button"
-                      onClick={handleOpenInputTag}
-                    >
-                      <Plus />
-                      <span>Etiqueta</span>
-                    </Button>
-                  )}
-                  {openInputTag && (
-                    <Button
-                      variant="outline"
-                      className="items mt-4 flex flex-1 text-center"
-                      type="button"
-                      onClick={handleOpenInputTag}
-                    >
-                      <Minus />
-                      <span>Etiqueta</span>
-                    </Button>
-                  )}
+
+                  <Button
+                    variant="outline"
+                    className="items mt-4 flex flex-1 text-center"
+                    type="button"
+                    onClick={handleOpenInputTag}
+                  >
+                    {openInputTag ? <Minus /> : <Plus />}
+                    <span>Etiqueta</span>
+                  </Button>
                 </div>
                 {openInputTag && (
                   <>
