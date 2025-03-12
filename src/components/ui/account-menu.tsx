@@ -1,4 +1,5 @@
-import { ChevronDown, LogOut, User } from 'lucide-react'
+import { ChevronDown, Laptop, LogOut, User } from 'lucide-react'
+import { NavLink } from 'react-router-dom'
 
 import { Button } from './button'
 import {
@@ -30,9 +31,17 @@ export function AccountMenu() {
           </span>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          <User />
-          <span> Perfil do usuário </span>
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <NavLink to="/profile">
+            <User />
+            <span> Perfil do usuário </span>
+          </NavLink>
+        </DropdownMenuItem>
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <NavLink to="/contents">
+            <Laptop />
+            <span> Conteúdos </span>
+          </NavLink>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer text-rose-500 hover:!text-rose-400 dark:text-rose-400">
           <LogOut className="text-rose-500 dark:text-rose-400" />

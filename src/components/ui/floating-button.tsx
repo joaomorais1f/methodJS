@@ -94,7 +94,7 @@ export function FloatingButton() {
                       type="color"
                       name="color"
                       defaultValue="#fff"
-                      className="h-25 w-25 cursor-pointer rounded-md border-none"
+                      className="h-20 w-20 cursor-pointer rounded-md border-none"
                     />
                   </>
                 )}
