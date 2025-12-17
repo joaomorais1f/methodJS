@@ -12,7 +12,7 @@ export function Router() {
   return (
     <Routes>
       <Route path="/" element={<AppLayout />}>
-        <Route path="/" element={<Dashboard />} />
+        <Route path="/" index element={<Dashboard />} />
         <Route path="/profile" element={<Profile />} />
         <Route path="/contents" element={<ContentLabel />} />
       </Route>

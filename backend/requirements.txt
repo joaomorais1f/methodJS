@@ -1,0 +1,2 @@
+pywebview>=4.4
+pythonnet>=3.0.0  # Necessário para Windows
