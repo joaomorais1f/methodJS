@@ -2,7 +2,6 @@ import { CalendarDays } from 'lucide-react'
 
 import { Calendar } from '@/components/calendar/calendar'
 import { ThemeToggle } from '@/components/theme/theme-toggle'
-import { AccountMenu } from '@/components/ui/account-menu'
 import { FloatingButton } from '@/components/ui/floating-button'
 
 export function Dashboard() {
@@ -17,9 +16,9 @@ export function Dashboard() {
         </div>
         <div className="ml-auto flex items-center gap-2">
           <ThemeToggle />
-          <div className="hidden md:flex">
+          {/* <div className="hidden md:flex">
             <AccountMenu />
-          </div>
+          </div> */}
         </div>
       </header>
       <Calendar />

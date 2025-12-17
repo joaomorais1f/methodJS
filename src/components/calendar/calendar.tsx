@@ -94,7 +94,7 @@ export function Calendar() {
       <header className="mt-3 flex flex-col">
         <div className="flex items-center justify-between pr-3">
           <h1 className="text-foreground text-2xl font-bold capitalize">
-            {format(currentDate, 'MMMM', { locale: ptBR })}
+            {format(currentDate, "MMMM yyyy", { locale: ptBR })}
           </h1>
           <div className="flex gap-3">
             <Button onClick={prevMonthHandler} className="cursor-pointer">
@@ -109,18 +109,21 @@ export function Calendar() {
           <Button
             variant={view === 'today' ? 'secondary' : 'default'}
             onClick={() => switchViewCalendar({ viewCase: 'today' })}
+            className='cursor-pointer'
           >
             Hoje
           </Button>
           <Button
             variant={view === 'week' ? 'secondary' : 'default'}
             onClick={() => switchViewCalendar({ viewCase: 'week' })}
+            className='cursor-pointer'
           >
             Semana
           </Button>
           <Button
             variant={view === 'month' ? 'secondary' : 'default'}
             onClick={() => switchViewCalendar({ viewCase: 'month' })}
+            className='cursor-pointer'
           >
             Mês
           </Button>
@@ -205,7 +208,7 @@ export function Calendar() {
                 <Button
                   variant="outline"
                   onClick={() => handleDayClick(day)}
-                  className={`${
+                  className={`cursor-pointer ${
                     isToday(day) ? 'border border-blue-600 text-blue-600' : ''
                   }`}
                 >
@@ -220,7 +223,7 @@ export function Calendar() {
                 <Button
                   variant="outline"
                   onClick={() => handleDayClick(day)}
-                  className="text-muted-foreground"
+                  className="text-muted-foreground cursor-pointer"
                 >
                   {format(day, 'd')}
                 </Button>
@@ -235,7 +238,7 @@ export function Calendar() {
                 <Button
                   variant="outline"
                   onClick={() => handleDayClick(day)}
-                  className={`${
+                  className={`cursor-pointer ${
                     isToday(day) ? 'border border-blue-600 text-blue-600' : ''
                   }`}
                 >

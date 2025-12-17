@@ -36,7 +36,7 @@ export function FloatingButton() {
   return (
     <Drawer>
       <DrawerTrigger asChild>
-        <Button variant="outline" className="h-12 w-12 lg:hidden">
+        <Button variant="outline" className="h-12 w-12 cursor-pointer">
           <Plus className="size-5" />
         </Button>
       </DrawerTrigger>
