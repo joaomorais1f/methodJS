@@ -78,7 +78,7 @@ class DataManager:
     def create_label(self, name: str, color: str) -> Dict:
         """Cria uma nova label."""
         conn = self._get_connection()
-        cursor = conn.cursor()
+        cursor = conn.cursor() 
         
         created_at = datetime.now().isoformat()
         
