@@ -32,7 +32,7 @@ export interface ReviewStatus {
 }
 
 export interface Review {
-  id: number
+  content_id: number
   title: string
   label_id: number
   label_name: string
@@ -42,6 +42,7 @@ export interface Review {
   scheduled_date: string
   completed: boolean
   completed_at?: string
+  created_at: string
 }
 
 export interface Statistics {
@@ -179,6 +180,13 @@ class PythonAPI {
     reviewType: 'next_day' | 'one_week' | 'one_month' | 'three_months',
   ): Promise<{ success: boolean; completed_at: string; error?: string } | null> {
     return this.call('mark_review_completed', contentId, reviewType)
+  }
+
+  async unmarkReviewCompleted(
+    contentId: number,
+    reviewType: 'next_day' | 'one_week' | 'one_month' | 'three_months',
+  ): Promise<{ success: boolean; error?: string } | null> {
+    return this.call('unmark_review_completed', contentId, reviewType)
   }
 
   // ==================== STATISTICS ====================

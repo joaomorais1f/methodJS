@@ -21,6 +21,7 @@ declare global {
         get_reviews_today(): Promise<any[]>
         get_reviews_by_date(date: string): Promise<any[]>
         mark_review_completed(content_id: number, review_type: string): Promise<any>
+        unmark_review_completed(content_id: number, review_type: string): Promise<any>
         
         // Statistics
         get_statistics(): Promise<any>

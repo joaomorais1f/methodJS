@@ -13,8 +13,11 @@ import {
   sub,
 } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
-import { ChevronLeft, ChevronRight } from 'lucide-react'
-import { useState } from 'react'
+import { Check, ChevronLeft, ChevronRight, X } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
+
+import { api, type Review } from '@/lib/api'
 
 import { Button } from '../ui/button'
 import {
@@ -33,7 +36,10 @@ interface viewCalendarProps {
 export function Calendar() {
   const [currentDate, setCurrentDate] = useState(startOfToday())
   const [view, setView] = useState('month')
-  const [selectedDate, setSelectedDate] = useState<Date | null>(null) // Para armazenar a data clicada
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null)
+  const [reviews, setReviews] = useState<Review[]>([])
+  const [isLoadingReviews, setIsLoadingReviews] = useState(false)
+  const [isDialogOpen, setIsDialogOpen] = useState(false)
 
   const startOfCurrentMonth = startOfMonth(currentDate)
   const endOfCurrentMonth = endOfMonth(currentDate)
@@ -77,8 +83,70 @@ export function Calendar() {
     setView(viewCase)
   }
 
+  // Carrega revisões quando a data é selecionada
+  useEffect(() => {
+    if (selectedDate && isDialogOpen) {
+      loadReviews()
+    }
+  }, [selectedDate, isDialogOpen])
+
+  async function loadReviews() {
+    if (!selectedDate) return
+
+    setIsLoadingReviews(true)
+    try {
+      const dateStr = format(selectedDate, 'yyyy-MM-dd')
+      const data = await api.getReviewsByDate(dateStr)
+      setReviews(data)
+    } catch (error) {
+      console.error('Erro ao carregar revisões:', error)
+      toast.error('Erro ao carregar revisões')
+    } finally {
+      setIsLoadingReviews(false)
+    }
+  }
+
+  async function handleMarkAsReviewed(contentId: number, reviewType: string) {
+    try {
+      const result = await api.markReviewCompleted(
+        contentId,
+        reviewType as 'next_day' | 'one_week' | 'one_month' | 'three_months',
+      )
+
+      if (result?.success) {
+        toast.success('Revisão marcada como completa!')
+        loadReviews()
+      } else {
+        toast.error(result?.error || 'Erro ao marcar revisão')
+      }
+    } catch (error) {
+      console.error('Erro ao marcar revisão:', error)
+      toast.error('Erro ao marcar revisão')
+    }
+  }
+
+  async function handleUnmarkReview(contentId: number, reviewType: string) {
+    try {
+      const result = await api.unmarkReviewCompleted(
+        contentId,
+        reviewType as 'next_day' | 'one_week' | 'one_month' | 'three_months',
+      )
+
+      if (result?.success) {
+        toast.success('Revisão desmarcada com sucesso!')
+        loadReviews()
+      } else {
+        toast.error(result?.error || 'Erro ao desmarcar revisão')
+      }
+    } catch (error) {
+      console.error('Erro ao desmarcar revisão:', error)
+      toast.error('Erro ao desmarcar revisão')
+    }
+  }
+
   function handleDayClick(day: Date) {
-    setSelectedDate(day) // Define a data clicada
+    setSelectedDate(day)
+    setIsDialogOpen(true)
   }
 
   function nextMonthHandler() {
@@ -140,8 +208,8 @@ export function Calendar() {
           <span>SÁB</span>
         </div>
       )}
-      <Dialog>
-        <DialogContent>
+      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {selectedDate
@@ -151,39 +219,93 @@ export function Calendar() {
                 : 'Selecione uma data'}
             </DialogTitle>
             <DialogDescription asChild>
-              {/* Conteúdo simulando itens de estudo */}
-              <ul className="flex list-inside list-none flex-col gap-1">
-                <li className="flex gap-2">
-                  <span className="border bg-yellow-600 text-white">
-                    Matemática
-                  </span>
-                  <span className="ml-auto">Equação do 2º grau</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="border bg-green-600 text-white">
-                    Química
-                  </span>
-                  <span>Química Orgânica</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="border bg-gray-600 text-white">
-                    História
-                  </span>
-                  <span> Revolução Industrial </span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="border bg-orange-600 text-white">
-                    Física
-                  </span>
-                  <span> Leis de Newton</span>
-                </li>
-                <li className="flex gap-2">
-                  <span className="border bg-yellow-600 text-white">
-                    Matemática
-                  </span>
-                  <span>Geometria Espacial</span>
-                </li>
-              </ul>
+              <div className="mt-4">
+                {isLoadingReviews ? (
+                  <p className="text-center text-muted-foreground">
+                    Carregando revisões...
+                  </p>
+                ) : reviews.length === 0 ? (
+                  <p className="text-center text-muted-foreground">
+                    Nenhuma revisão pendente para esta data.
+                  </p>
+                ) : (
+                  <ul className="flex list-inside list-none flex-col gap-3">
+                    {reviews.map((review) => (
+                      <li
+                        key={`${review.content_id}-${review.review_type}`}
+                        className="flex flex-col gap-2 rounded-md border p-3"
+                      >
+                        <div className="flex items-center gap-2">
+                          <span
+                            className="rounded px-2 py-1 text-xs font-semibold text-white"
+                            style={{ backgroundColor: review.label_color }}
+                          >
+                            {review.label_name}
+                          </span>
+                          <span className="flex-1 font-medium">
+                            {review.title}
+                          </span>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                          <span className="capitalize">
+                            {review.review_type === 'next_day' && 'Dia seguinte'}
+                            {review.review_type === 'one_week' && '1 semana'}
+                            {review.review_type === 'one_month' && '1 mês'}
+                            {review.review_type === 'three_months' &&
+                              '3 meses'}
+                          </span>
+                          <span>•</span>
+                          <span>
+                            {format(new Date(review.scheduled_date), 'dd/MM/yyyy')}
+                          </span>
+                        </div>
+                        <div className="flex gap-2">
+                          {!review.completed ? (
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                handleMarkAsReviewed(
+                                  review.content_id,
+                                  review.review_type,
+                                )
+                              }
+                              className="flex items-center gap-1"
+                            >
+                              <Check className="size-4" />
+                              Marcar como revisado
+                            </Button>
+                          ) : (
+                            <div className="flex items-center justify-between gap-2">
+                              <span className="text-sm text-green-600">
+                                ✓ Revisado em{' '}
+                                {review.completed_at &&
+                                  format(
+                                    new Date(review.completed_at),
+                                    "dd/MM/yyyy 'às' HH:mm",
+                                  )}
+                              </span>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() =>
+                                  handleUnmarkReview(
+                                    review.content_id,
+                                    review.review_type,
+                                  )
+                                }
+                                className="flex items-center gap-1"
+                              >
+                                <X className="size-4" />
+                                Desmarcar
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
             </DialogDescription>
           </DialogHeader>
         </DialogContent>

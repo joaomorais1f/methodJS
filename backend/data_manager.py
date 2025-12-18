@@ -328,15 +328,15 @@ class DataManager:
         
         cursor.execute('''
             SELECT 
-                c.id, c.title, c.created_at,
+                c.id as content_id, c.title, c.created_at,
                 l.id as label_id, l.name as label_name, l.color as label_color,
                 r.id as review_id, r.review_type, r.scheduled_date, 
                 r.completed, r.completed_at
             FROM reviews r
             JOIN contents c ON r.content_id = c.id
             JOIN labels l ON c.label_id = l.id
-            WHERE r.scheduled_date <= ? AND r.completed = 0
-            ORDER BY r.scheduled_date, c.title
+            WHERE r.scheduled_date = ?
+            ORDER BY r.completed ASC, c.title
         ''', (date,))
         
         reviews = []
@@ -367,6 +367,26 @@ class DataManager:
         
         conn.close()
         return {'success': True, 'completed_at': completed_at}
+    
+    def unmark_review_completed(self, content_id: int, review_type: str) -> Dict:
+        """Desmarca uma revisão como completa (retorna ao estado pendente)."""
+        conn = self._get_connection()
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            UPDATE reviews 
+            SET completed = 0, completed_at = NULL
+            WHERE content_id = ? AND review_type = ?
+        ''', (content_id, review_type))
+        
+        conn.commit()
+        
+        if cursor.rowcount == 0:
+            conn.close()
+            return {'error': 'Revisão não encontrada'}
+        
+        conn.close()
+        return {'success': True}
     
     def get_statistics(self) -> Dict:
         """Retorna estatísticas gerais do sistema."""
