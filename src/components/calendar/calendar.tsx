@@ -256,7 +256,7 @@ export function Calendar() {
                           </span>
                           <span>•</span>
                           <span>
-                            {format(new Date(review.scheduled_date), 'dd/MM/yyyy')}
+                            {review.scheduled_date.split('-').reverse().join('/')}
                           </span>
                         </div>
                         <div className="flex gap-2">
@@ -269,7 +269,7 @@ export function Calendar() {
                                   review.review_type,
                                 )
                               }
-                              className="flex items-center gap-1"
+                              className="flex items-center gap-1 cursor-pointer"
                             >
                               <Check className="size-4" />
                               Marcar como revisado
@@ -293,7 +293,7 @@ export function Calendar() {
                                     review.review_type,
                                   )
                                 }
-                                className="flex items-center gap-1"
+                                className="flex items-center gap-1 cursor-pointer"
                               >
                                 <X className="size-4" />
                                 Desmarcar

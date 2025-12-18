@@ -238,7 +238,7 @@ export function FloatingButton() {
 
                   <Button
                     variant="outline"
-                    className="mt-4 flex items-center gap-1"
+                    className="mt-4 flex items-center gap-1 cursor-pointer"
                     type="button"
                     onClick={handleOpenInputTag}
                   >
@@ -293,7 +293,7 @@ export function FloatingButton() {
                     <Button
                       type="button"
                       variant="secondary"
-                      className="w-full"
+                      className="w-full cursor-pointer"
                       onClick={handleSubmitLabel(onSubmitLabel)}
                       disabled={isSubmitting}
                     >
@@ -303,11 +303,11 @@ export function FloatingButton() {
                 )}
 
                 <DrawerFooter>
-                  <Button type="submit" disabled={isSubmitting}>
+                  <Button type="submit" disabled={isSubmitting} className='cursor-pointer'>
                     {isSubmitting ? 'Cadastrando...' : 'Cadastrar'}
                   </Button>
                   <DrawerClose asChild>
-                    <Button variant="outline">Voltar</Button>
+                    <Button variant="outline" className='cursor-pointer'>Voltar</Button>
                   </DrawerClose>
                 </DrawerFooter>
               </form>
