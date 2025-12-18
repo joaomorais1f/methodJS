@@ -85,6 +85,15 @@ class Backend:
         """
         return self.db.mark_review_completed(content_id, review_type)
     
+    def unmark_review_completed(self, content_id: int, review_type: str):
+        """Desmarca uma revisão como completa (retorna ao estado pendente).
+        
+        Args:
+            content_id: ID do conteúdo
+            review_type: 'next_day', 'one_week', 'one_month', ou 'three_months'
+        """
+        return self.db.unmark_review_completed(content_id, review_type)
+    
     # ==================== STATISTICS ====================
     
     def get_statistics(self):
